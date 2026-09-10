@@ -1,0 +1,1 @@
+window.ALBA_CONFIG={name:'ALBA',tagline:'Información que despierta',description:'Portal de información, datos, tendencias e investigaciones',version:'0.1.0'};
