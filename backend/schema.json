@@ -1,0 +1,29 @@
+{
+  "version": "0.1.0",
+  "entities": {
+    "article": {
+      "id": "string",
+      "title": "string",
+      "slug": "string",
+      "summary": "string",
+      "content": "string",
+      "categoryId": "string",
+      "sourceIds": ["string"],
+      "status": "draft|published|archived",
+      "createdAt": "datetime",
+      "updatedAt": "datetime",
+      "publishedAt": "datetime|null"
+    },
+    "category": {
+      "id": "string",
+      "name": "string",
+      "slug": "string"
+    },
+    "source": {
+      "id": "string",
+      "name": "string",
+      "url": "string",
+      "description": "string|null"
+    }
+  }
+}
