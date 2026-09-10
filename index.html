@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ALBA — Portal de información, datos, tendencias e investigaciones.">
+  <meta name="theme-color" content="#0b1220">
+  <title>ALBA | Portal de información</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#inicio" aria-label="ALBA inicio">
+        <span class="brand-mark">A</span>
+        <span><strong>ALBA</strong><small>Información que despierta</small></span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#noticias">Noticias</a>
+        <a href="#datos">Datos</a>
+        <a href="#tendencias">Tendencias</a>
+        <a href="#investigaciones">Investigaciones</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">PORTAL DE INFORMACIÓN</p>
+          <h1>Una nueva forma de <span>entender lo que pasa.</span></h1>
+          <p class="hero-text">ALBA reúne información, datos, tendencias e investigaciones para convertir lo complejo en conocimiento claro y útil.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#noticias">Explorar ALBA</a>
+            <a class="button secondary" href="#datos">Ver datos</a>
+          </div>
+        </div>
+        <div class="sunrise" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="horizon"></div>
+          <div class="glow"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="noticias">
+      <div class="container">
+        <div class="section-heading">
+          <div><p class="eyebrow">AL DÍA</p><h2>Noticias y actualidad</h2></div>
+          <p>Información seleccionada para mantenerte al tanto.</p>
+        </div>
+        <div class="cards three">
+          <article class="card"><span class="tag">Actualidad</span><h3>Información clara, contextualizada y verificable.</h3><p>ALBA está diseñado para presentar los hechos con contexto y facilitar su comprensión.</p></article>
+          <article class="card"><span class="tag">Análisis</span><h3>Más allá del titular.</h3><p>Conecta noticias con datos y tendencias para comprender qué hay detrás de cada fenómeno.</p></article>
+          <article class="card"><span class="tag">Perspectiva</span><h3>Una mirada amplia.</h3><p>Un espacio para descubrir diferentes temas, fuentes y líneas de investigación.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section muted" id="datos">
+      <div class="container feature-grid">
+        <div><p class="eyebrow">DATOS</p><h2>Los números también cuentan historias.</h2><p>El futuro de ALBA incorporará indicadores, visualizaciones y conjuntos de datos para explorar información de manera interactiva.</p></div>
+        <div class="data-panel"><div><strong>01</strong><span>Indicadores</span></div><div><strong>02</strong><span>Fuentes</span></div><div><strong>03</strong><span>Análisis</span></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="tendencias">
+      <div class="container split">
+        <div><p class="eyebrow">TENDENCIAS</p><h2>Detectar el cambio antes de que sea evidente.</h2></div>
+        <p>ALBA podrá identificar patrones, movimientos y temas emergentes para ofrecer una lectura anticipada de lo que está cambiando.</p>
+      </div>
+    </section>
+
+    <section class="section dark" id="investigaciones">
+      <div class="container split">
+        <div><p class="eyebrow">INVESTIGACIONES</p><h2>Profundizar. Contrastar. Entender.</h2></div>
+        <p>Un espacio preparado para investigaciones, informes y análisis de mayor profundidad.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-wrap"><div><strong>ALBA</strong><p>Información que despierta.</p></div><span>© <span id="year"></span> ALBA</span></div>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
