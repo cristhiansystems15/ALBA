@@ -2,126 +2,24 @@ const ALBA_SUPABASE_URL="https://xuilkvsehlnkqtlfkblw.supabase.co";
 const ALBA_SUPABASE_KEY="sb_publishable_Mdr55DRXLuqCXIYjh5hepQ_Lx3T3-Pg";
 
 document.addEventListener('DOMContentLoaded',()=>{
-  const year=document.getElementById('year');
-  if(year) year.textContent=new Date().getFullYear();
-
-  const grid=document.getElementById('newsGrid');
-  const filters=document.getElementById('categoryFilters');
-  const sourceFilters=document.getElementById('sourceFilters');
-  const input=document.getElementById('searchInput');
-  const empty=document.getElementById('emptyState');
-  const searchBar=document.getElementById('searchBar');
-  let activeCategory='Todas';
-  let activeSource='Todas';
-  let news=[];
-  let categories=[];
-  let sources=[];
-
-  const fallbackCategories=['Honduras','Internacional','Política','Economía','Deportes','Salud','Tecnología','Ciencia','Clima','Tendencias'];
-  const fallbackSources=['BBC Mundo','BBC News World','DW Español','Google News Honduras'];
-  const escapeHtml=(value='')=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-  const render=()=>{
-    const query=(input?.value||'').trim().toLowerCase();
-    const items=news.filter(item=>{
-      const categoryOk=activeCategory==='Todas'||item.category===activeCategory;
-      const sourceOk=activeSource==='Todas'||item.source===activeSource;
-      const text=`${item.title} ${item.summary||''} ${item.category} ${item.source}`.toLowerCase();
-      return categoryOk&&sourceOk&&text.includes(query);
-    });
-
-    if(grid) grid.innerHTML=items.map(item=>`<article class="card">
-      ${item.image_url?`<img class="card-image" src="${escapeHtml(item.image_url)}" alt="" loading="lazy">`:''}
-      <div class="card-meta"><span class="tag">${escapeHtml(item.category)}</span><span class="source-tag">${escapeHtml(item.source)}</span></div>
-      <h3>${escapeHtml(item.title)}</h3>
-      <p>${escapeHtml(item.summary||'')}</p>
-      <div class="card-footer">${item.published_at?`<time datetime="${escapeHtml(item.published_at)}">${new Date(item.published_at).toLocaleString('es-HN',{dateStyle:'medium',timeStyle:'short'})}</time>`:''}${item.canonical_url?`<a class="read-more" href="${escapeHtml(item.canonical_url)}" target="_blank" rel="noopener noreferrer">Leer más →</a>`:''}</div>
-    </article>`).join('');
-
-    if(empty){
-      empty.hidden=items.length>0;
-      if(!items.length) empty.textContent=query||activeCategory!=='Todas'||activeSource!=='Todas'?'No encontramos noticias con esos filtros.':'No encontramos noticias disponibles.';
-    }
-  };
-
-  const bindFilter=(container,setter)=>{
-    if(!container)return;
-    container.addEventListener('click',e=>{
-      const btn=e.target.closest('.filter');
-      if(!btn)return;
-      setter(btn.dataset.value||'Todas');
-      container.querySelectorAll('.filter').forEach(b=>b.classList.toggle('active',b===btn));
-      render();
-    });
-  };
-
-  const renderFilters=()=>{
-    if(filters) filters.innerHTML=['Todas',...new Set(categories)].map(category=>`<button type="button" class="filter ${category==='Todas'?'active':''}" data-value="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join('');
-    if(sourceFilters) sourceFilters.innerHTML=['Todas',...new Set(sources)].map(source=>`<button type="button" class="filter ${source==='Todas'?'active':''}" data-value="${escapeHtml(source)}">${escapeHtml(source)}</button>`).join('');
-  };
-
-  const loadNews=async()=>{
-    try{
-      if(grid) grid.innerHTML='<p class="empty">Cargando noticias…</p>';
-      categories=[...fallbackCategories];
-      sources=[...fallbackSources];
-      renderFilters();
-
-      const headers={apikey:ALBA_SUPABASE_KEY,Authorization:`Bearer ${ALBA_SUPABASE_KEY}`};
-      const base=`${ALBA_SUPABASE_URL}/rest/v1/`;
-      const url=(table,params)=>{
-        const u=new URL(base+table);
-        Object.entries(params||{}).forEach(([k,v])=>u.searchParams.set(k,v));
-        return u;
-      };
-
-      // Keep these requests independent. This avoids failures from PostgREST
-      // relationship/schema-cache embedding and lets the UI join by foreign-key IDs.
-      const articleUrl=url('articles',{select:'id,title,summary,image_url,canonical_url,published_at,category_id,source_id',status:'eq.published',order:'published_at.desc.nullslast',limit:'100'});
-      const categoryUrl=url('categories',{select:'id,name',is_active:'eq.true',order:'name.asc',limit:'100'});
-      const sourceUrl=url('sources',{select:'id,name',is_active:'eq.true',order:'name.asc',limit:'100'});
-
-      const [articlesResponse,categoriesResponse,sourcesResponse]=await Promise.all([
-        fetch(articleUrl,{headers,cache:'no-store'}),
-        fetch(categoryUrl,{headers,cache:'no-store'}),
-        fetch(sourceUrl,{headers,cache:'no-store'})
-      ]);
-
-      if(!articlesResponse.ok){
-        const body=await articlesResponse.text().catch(()=> '');
-        throw new Error(`Noticias ${articlesResponse.status}: ${body.slice(0,300)}`);
-      }
-
-      const articleData=await articlesResponse.json();
-      const categoryData=categoriesResponse.ok?await categoriesResponse.json():[];
-      const sourceData=sourcesResponse.ok?await sourcesResponse.json():[];
-      const categoryMap=new Map(categoryData.map(c=>[c.id,c.name]));
-      const sourceMap=new Map(sourceData.map(s=>[s.id,s.name]));
-
-      news=articleData.map(item=>({
-        ...item,
-        category:categoryMap.get(item.category_id)||'Actualidad',
-        source:sourceMap.get(item.source_id)||'Fuente desconocida'
-      }));
-
-      categories=[...new Set([...fallbackCategories,...categoryData.map(c=>c.name).filter(Boolean),...news.map(n=>n.category).filter(Boolean)])];
-      sources=[...new Set([...fallbackSources,...sourceData.map(s=>s.name).filter(Boolean),...news.map(n=>n.source).filter(Boolean)])];
-
-      renderFilters();
-      render();
-    }catch(error){
-      console.error('ALBA: error cargando noticias desde Supabase',error);
-      news=[];
-      renderFilters();
-      if(grid) grid.innerHTML='';
-      if(empty){empty.hidden=false;empty.textContent='No se pudieron cargar las noticias en este momento. El sistema está revisando la conexión con ALBA.';}
-    }
-  };
-
-  bindFilter(filters,value=>{activeCategory=value;});
-  bindFilter(sourceFilters,value=>{activeSource=value;});
-  input?.addEventListener('input',render);
-  document.getElementById('searchToggle')?.addEventListener('click',()=>{searchBar.classList.add('open');input?.focus();});
-  document.getElementById('searchClose')?.addEventListener('click',()=>{searchBar.classList.remove('open');if(input)input.value='';render();});
-  loadNews();
+ const year=document.getElementById('year'); if(year)year.textContent=new Date().getFullYear();
+ const grid=document.getElementById('newsGrid'),featured=document.getElementById('featuredNews'),filters=document.getElementById('categoryFilters'),sourceFilters=document.getElementById('sourceFilters'),input=document.getElementById('searchInput'),empty=document.getElementById('emptyState'),searchBar=document.getElementById('searchBar');
+ let activeCategory='Todas',activeSource='Todas',news=[],categories=[],sources=[];
+ const fallbackCategories=['Honduras','Internacional','Política','Economía','Deportes','Salud','Tecnología','Ciencia','Clima','Tendencias'];
+ const fallbackSources=['BBC Mundo','BBC News World','BBC Honduras','EL PAÍS'];
+ const escapeHtml=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const safeImage=(v='')=>{try{const u=new URL(v);return /^https?:$/.test(u.protocol)?u.href:''}catch{return ''}};
+ const formatDate=v=>v?new Date(v).toLocaleString('es-HN',{dateStyle:'medium',timeStyle:'short'}):'';
+ const render=()=>{
+  const q=(input?.value||'').trim().toLowerCase();
+  const items=news.filter(n=>{const text=`${n.title} ${n.summary||''} ${n.category} ${n.source}`.toLowerCase();return (activeCategory==='Todas'||n.category===activeCategory)&&(activeSource==='Todas'||n.source===activeSource)&&text.includes(q)});
+  if(featured){const lead=items[0];featured.innerHTML=lead?`<article class="featured"><div class="featured-media">${safeImage(lead.image_url)?`<img src="${escapeHtml(safeImage(lead.image_url))}" alt="" loading="eager">`:'<div class="featured-placeholder">ALBA</div>'}</div><div class="featured-content"><div class="card-meta"><span class="tag">${escapeHtml(lead.category)}</span><span class="source-tag">${escapeHtml(lead.source)}</span></div><h2>${escapeHtml(lead.title)}</h2><p>${escapeHtml(lead.summary||'Información de la noticia disponible en la fuente original.')}</p><div class="featured-meta">${escapeHtml(formatDate(lead.published_at))}</div>${lead.canonical_url?`<a class="featured-link" href="${escapeHtml(lead.canonical_url)}" target="_blank" rel="noopener noreferrer">Leer noticia completa →</a>`:''}</div></article>`:'';}
+  const cards=items.slice(featured&&items.length?1:0);
+  if(grid)grid.innerHTML=cards.map(n=>`<article class="card"><div class="card-image-wrap">${safeImage(n.image_url)?`<img class="card-image" src="${escapeHtml(safeImage(n.image_url))}" alt="" loading="lazy">`:'<div class="card-image placeholder">ALBA · NOTICIAS</div>'}</div><div class="card-body"><div class="card-meta"><span class="tag">${escapeHtml(n.category)}</span><span class="source-tag">${escapeHtml(n.source)}</span></div><h3>${escapeHtml(n.title)}</h3><p>${escapeHtml(n.summary||'')}</p><div class="card-footer"><time>${escapeHtml(formatDate(n.published_at))}</time>${n.canonical_url?`<a class="read-more" href="${escapeHtml(n.canonical_url)}" target="_blank" rel="noopener noreferrer">Leer más →</a>`:''}</div></div></article>`).join('');
+  if(empty){empty.hidden=items.length>0;empty.textContent=items.length?'':(q||activeCategory!=='Todas'||activeSource!=='Todas'?'No encontramos noticias con esos filtros.':'No encontramos noticias disponibles.');}
+ };
+ const bindFilter=(container,setter)=>container?.addEventListener('click',e=>{const b=e.target.closest('.filter');if(!b)return;setter(b.dataset.value||'Todas');container.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));render();});
+ const renderFilters=()=>{if(filters)filters.innerHTML=['Todas',...new Set(categories)].map(c=>`<button type="button" class="filter ${c==='Todas'?'active':''}" data-value="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join('');if(sourceFilters)sourceFilters.innerHTML=['Todas',...new Set(sources)].map(s=>`<button type="button" class="filter ${s==='Todas'?'active':''}" data-value="${escapeHtml(s)}">${escapeHtml(s)}</button>`).join('');};
+ const loadNews=async()=>{try{if(grid)grid.innerHTML='<p class="empty">Cargando noticias…</p>';categories=[...fallbackCategories];sources=[...fallbackSources];renderFilters();const headers={apikey:ALBA_SUPABASE_KEY,Authorization:`Bearer ${ALBA_SUPABASE_KEY}`},base=`${ALBA_SUPABASE_URL}/rest/v1/`;const url=(table,params)=>{const u=new URL(base+table);Object.entries(params||{}).forEach(([k,v])=>u.searchParams.set(k,v));return u};const [ar,cr,sr]=await Promise.all([fetch(url('articles',{select:'id,title,summary,image_url,canonical_url,published_at,category_id,source_id',status:'eq.published',order:'published_at.desc.nullslast',limit:'100'}),{headers,cache:'no-store'}),fetch(url('categories',{select:'id,name',is_active:'eq.true',order:'name.asc',limit:'100'}),{headers,cache:'no-store'}),fetch(url('sources',{select:'id,name',is_active:'eq.true',order:'name.asc',limit:'100'}),{headers,cache:'no-store'})]);if(!ar.ok)throw new Error(`Noticias ${ar.status}`);const ad=await ar.json(),cd=cr.ok?await cr.json():[],sd=sr.ok?await sr.json():[],cm=new Map(cd.map(x=>[x.id,x.name])),sm=new Map(sd.map(x=>[x.id,x.name]));news=ad.map(n=>({...n,category:cm.get(n.category_id)||'Actualidad',source:sm.get(n.source_id)||'Fuente desconocida'}));categories=[...new Set([...fallbackCategories,...cd.map(x=>x.name).filter(Boolean),...news.map(x=>x.category)])];sources=[...new Set([...fallbackSources,...sd.map(x=>x.name).filter(Boolean),...news.map(x=>x.source)])];renderFilters();render()}catch(e){console.error('ALBA',e);news=[];renderFilters();if(featured)featured.innerHTML='';if(grid)grid.innerHTML='';if(empty){empty.hidden=false;empty.textContent='No se pudieron cargar las noticias en este momento. Estamos revisando la conexión con ALBA.'}}};
+ bindFilter(filters,v=>activeCategory=v);bindFilter(sourceFilters,v=>activeSource=v);input?.addEventListener('input',render);document.getElementById('searchToggle')?.addEventListener('click',()=>{searchBar.classList.add('open');input?.focus()});document.getElementById('searchClose')?.addEventListener('click',()=>{searchBar.classList.remove('open');if(input)input.value='';render()});loadNews();
 });
