@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   const fallbackCategories=['Honduras','Internacional','Política','Economía','Deportes','Salud','Tecnología','Ciencia','Clima','Tendencias'];
   const fallbackSources=['BBC Mundo','BBC News World','DW Español','Google News Honduras'];
-
   const escapeHtml=(value='')=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   const render=()=>{
@@ -57,12 +56,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   };
 
   const renderFilters=()=>{
-    if(filters){
-      filters.innerHTML=['Todas',...new Set(categories)].map(category=>`<button type="button" class="filter ${category==='Todas'?'active':''}" data-value="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join('');
-    }
-    if(sourceFilters){
-      sourceFilters.innerHTML=['Todas',...new Set(sources)].map(source=>`<button type="button" class="filter ${source==='Todas'?'active':''}" data-value="${escapeHtml(source)}">${escapeHtml(source)}</button>`).join('');
-    }
+    if(filters) filters.innerHTML=['Todas',...new Set(categories)].map(category=>`<button type="button" class="filter ${category==='Todas'?'active':''}" data-value="${escapeHtml(category)}">${escapeHtml(category)}</button>`).join('');
+    if(sourceFilters) sourceFilters.innerHTML=['Todas',...new Set(sources)].map(source=>`<button type="button" class="filter ${source==='Todas'?'active':''}" data-value="${escapeHtml(source)}">${escapeHtml(source)}</button>`).join('');
   };
 
   const loadNews=async()=>{
@@ -73,24 +68,44 @@ document.addEventListener('DOMContentLoaded',()=>{
       renderFilters();
 
       const headers={apikey:ALBA_SUPABASE_KEY,Authorization:`Bearer ${ALBA_SUPABASE_KEY}`};
-      const articleUrl=new URL(`${ALBA_SUPABASE_URL}/rest/v1/articles`);
-      articleUrl.searchParams.set('select','id,title,summary,image_url,canonical_url,published_at,categories(name),sources(name)');
-      articleUrl.searchParams.set('status','eq.published');
-      articleUrl.searchParams.set('order','published_at.desc.nullslast');
-      articleUrl.searchParams.set('limit','100');
+      const base=`${ALBA_SUPABASE_URL}/rest/v1/`;
+      const url=(table,params)=>{
+        const u=new URL(base+table);
+        Object.entries(params||{}).forEach(([k,v])=>u.searchParams.set(k,v));
+        return u;
+      };
 
-      const response=await fetch(articleUrl,{headers,cache:'no-store'});
-      if(!response.ok) throw new Error(`No se pudieron cargar las noticias (${response.status})`);
-      const articleData=await response.json();
+      // Keep these requests independent. This avoids failures from PostgREST
+      // relationship/schema-cache embedding and lets the UI join by foreign-key IDs.
+      const articleUrl=url('articles',{select:'id,title,summary,image_url,canonical_url,published_at,category_id,source_id',status:'eq.published',order:'published_at.desc.nullslast',limit:'100'});
+      const categoryUrl=url('categories',{select:'id,name',is_active:'eq.true',order:'name.asc',limit:'100'});
+      const sourceUrl=url('sources',{select:'id,name',is_active:'eq.true',order:'name.asc',limit:'100'});
+
+      const [articlesResponse,categoriesResponse,sourcesResponse]=await Promise.all([
+        fetch(articleUrl,{headers,cache:'no-store'}),
+        fetch(categoryUrl,{headers,cache:'no-store'}),
+        fetch(sourceUrl,{headers,cache:'no-store'})
+      ]);
+
+      if(!articlesResponse.ok){
+        const body=await articlesResponse.text().catch(()=> '');
+        throw new Error(`Noticias ${articlesResponse.status}: ${body.slice(0,300)}`);
+      }
+
+      const articleData=await articlesResponse.json();
+      const categoryData=categoriesResponse.ok?await categoriesResponse.json():[];
+      const sourceData=sourcesResponse.ok?await sourcesResponse.json():[];
+      const categoryMap=new Map(categoryData.map(c=>[c.id,c.name]));
+      const sourceMap=new Map(sourceData.map(s=>[s.id,s.name]));
 
       news=articleData.map(item=>({
         ...item,
-        category:item.categories?.name||'Actualidad',
-        source:item.sources?.name||'Fuente desconocida'
+        category:categoryMap.get(item.category_id)||'Actualidad',
+        source:sourceMap.get(item.source_id)||'Fuente desconocida'
       }));
 
-      categories=[...new Set([...fallbackCategories,...news.map(n=>n.category).filter(Boolean)])];
-      sources=[...new Set([...fallbackSources,...news.map(n=>n.source).filter(Boolean)])];
+      categories=[...new Set([...fallbackCategories,...categoryData.map(c=>c.name).filter(Boolean),...news.map(n=>n.category).filter(Boolean)])];
+      sources=[...new Set([...fallbackSources,...sourceData.map(s=>s.name).filter(Boolean),...news.map(n=>n.source).filter(Boolean)])];
 
       renderFilters();
       render();
@@ -99,7 +114,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       news=[];
       renderFilters();
       if(grid) grid.innerHTML='';
-      if(empty){empty.hidden=false;empty.textContent='No se pudieron cargar las noticias en este momento. Revisa la consola del navegador para ver el error.';}
+      if(empty){empty.hidden=false;empty.textContent='No se pudieron cargar las noticias en este momento. El sistema está revisando la conexión con ALBA.';}
     }
   };
 
@@ -108,6 +123,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   input?.addEventListener('input',render);
   document.getElementById('searchToggle')?.addEventListener('click',()=>{searchBar.classList.add('open');input?.focus();});
   document.getElementById('searchClose')?.addEventListener('click',()=>{searchBar.classList.remove('open');if(input)input.value='';render();});
-
   loadNews();
 });
