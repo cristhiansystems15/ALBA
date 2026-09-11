@@ -3,35 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ALBA — Portal de información, datos, tendencias e investigaciones.">
+  <meta name="description" content="ALBA — Noticias, contexto y análisis para entender lo que pasa.">
   <meta name="theme-color" content="#0b1220">
-  <title>ALBA | Portal de información</title>
-  <link rel="stylesheet" href="styles.css?v=20260911-2">
+  <title>ALBA | Noticias y contexto</title>
+  <link rel="stylesheet" href="styles.css?v=20260911-4">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="brand" href="#inicio" aria-label="ALBA inicio"><span class="brand-mark">A</span><span><strong>ALBA</strong><small>Información que despierta</small></span></a>
-      <nav aria-label="Navegación principal"><a href="#inicio">Inicio</a><a href="#noticias">Noticias</a><a href="#datos">Datos</a><a href="#tendencias">Tendencias</a><a href="#investigaciones">Investigaciones</a></nav>
-      <button class="search-toggle" id="searchToggle" aria-label="Abrir buscador">⌕</button>
-    </div>
-  </header>
-
-  <div class="search-bar" id="searchBar"><div class="container search-inner"><input id="searchInput" type="search" placeholder="Buscar en ALBA..." autocomplete="off"><button id="searchClose" aria-label="Cerrar buscador">×</button></div></div>
-
+  <header class="site-header"><div class="container nav-wrap"><a class="brand" href="#inicio" aria-label="ALBA inicio"><span class="brand-mark">A</span><span><strong>ALBA</strong><small>Noticias que despiertan</small></span></a><nav aria-label="Navegación principal"><a href="#inicio">Inicio</a><a href="#noticias">Noticias</a><a href="#honduras">Honduras</a><a href="#internacional">Internacional</a><a href="#analisis">Análisis</a></nav><button class="search-toggle" id="searchToggle" aria-label="Abrir buscador">⌕</button></div></header>
+  <div class="search-bar" id="searchBar"><div class="container search-inner"><input id="searchInput" type="search" placeholder="Buscar noticias..." autocomplete="off"><button id="searchClose" aria-label="Cerrar buscador">×</button></div></div>
   <main id="inicio">
-    <section class="hero"><div class="container hero-grid"><div><p class="eyebrow">PORTAL DE INFORMACIÓN</p><h1>Una nueva forma de <span>entender lo que pasa.</span></h1><p class="hero-text">ALBA reúne información, datos, tendencias e investigaciones para convertir lo complejo en conocimiento claro y útil.</p><div class="hero-actions"><a class="button primary" href="#noticias">Explorar ALBA</a><a class="button secondary" href="#datos">Ver datos</a></div></div><div class="sunrise" aria-hidden="true"><div class="sun"></div><div class="horizon"></div><div class="glow"></div></div></div></section>
-
-    <section class="section" id="noticias"><div class="container"><div class="section-heading"><div><p class="eyebrow">AL DÍA</p><h2>Noticias y actualidad</h2></div><p>Filtra por fuente o categoría para encontrar rápidamente lo importante.</p></div><div class="filter-section"><div class="filter-label">Fuentes</div><div class="filters" id="sourceFilters"></div></div><div class="filter-section"><div class="filter-label">Categorías</div><div class="filters" id="categoryFilters"></div></div><div class="cards three" id="newsGrid"></div><p class="empty" id="emptyState" hidden>No encontramos resultados para tu búsqueda.</p></div></section>
-
-    <section class="section muted" id="datos"><div class="container feature-grid"><div><p class="eyebrow">DATOS</p><h2>Los números también cuentan historias.</h2><p>El espacio de datos está preparado para incorporar indicadores, visualizaciones y fuentes verificables.</p></div><div class="data-panel"><div><strong>01</strong><span>Indicadores</span></div><div><strong>02</strong><span>Fuentes</span></div><div><strong>03</strong><span>Análisis</span></div></div></div></section>
-
-    <section class="section" id="tendencias"><div class="container split"><div><p class="eyebrow">TENDENCIAS</p><h2>Detectar el cambio antes de que sea evidente.</h2></div><p>ALBA podrá identificar patrones, movimientos y temas emergentes para ofrecer una lectura anticipada de lo que está cambiando.</p></div></section>
-    <section class="section dark" id="investigaciones"><div class="container split"><div><p class="eyebrow">INVESTIGACIONES</p><h2>Profundizar. Contrastar. Entender.</h2></div><p>Un espacio preparado para investigaciones, informes y análisis de mayor profundidad.</p></div></section>
+    <section class="hero"><div class="container hero-grid"><div><p class="eyebrow">ALBA · NOTICIAS Y CONTEXTO</p><h1>Entiende lo que <span>está pasando.</span></h1><p class="hero-text">Noticias seleccionadas, explicadas con claridad y acompañadas de contexto para que no tengas que quedarte solo con el titular.</p><div class="hero-actions"><a class="button primary" href="#noticias">Ver últimas noticias</a><a class="button secondary" href="#analisis">Cómo explicamos</a></div></div><div class="hero-news"><div class="hero-news-glow"></div><div class="hero-news-lines"><span>HECHOS</span><span>CONTEXTO</span><span>ANÁLISIS</span></div></div></div></section>
+    <section class="section" id="noticias"><div class="container"><div class="section-heading"><div><p class="eyebrow">AL DÍA</p><h2>Últimas noticias</h2></div><p>Explora por fuente, categoría o palabra clave. Cada noticia incluye su origen y una explicación clara.</p></div><div class="filter-section"><div class="filter-label">Fuentes</div><div class="filters" id="sourceFilters"></div></div><div class="filter-section"><div class="filter-label">Categorías</div><div class="filters" id="categoryFilters"></div></div><div class="cards three" id="newsGrid"></div><p class="empty" id="emptyState" hidden>No encontramos resultados.</p></div></section>
+    <section class="section muted" id="honduras"><div class="container split"><div><p class="eyebrow">HONDURAS</p><h2>Lo que importa en casa.</h2></div><p>ALBA prioriza las noticias nacionales y las presenta con contexto para facilitar su comprensión.</p></div></section>
+    <section class="section" id="internacional"><div class="container split"><div><p class="eyebrow">INTERNACIONAL</p><h2>El mundo, explicado.</h2></div><p>Una lectura clara de los acontecimientos internacionales y su posible impacto.</p></div></section>
+    <section class="section dark" id="analisis"><div class="container analysis-intro"><p class="eyebrow">EL MÉTODO ALBA</p><h2>No solo te contamos qué pasó.<br><span>Te ayudamos a entenderlo.</span></h2><div class="analysis-points"><div><strong>01</strong><h3>¿Qué pasó?</h3><p>Resumen de los hechos principales.</p></div><div><strong>02</strong><h3>¿Por qué importa?</h3><p>Contexto para entender su relevancia.</p></div><div><strong>03</strong><h3>¿Qué sigue?</h3><p>Posibles escenarios claramente separados de los hechos.</p></div></div></div></section>
   </main>
-
-  <footer><div class="container footer-wrap"><div><strong>ALBA</strong><p>Información que despierta.</p></div><span>© <span id="year"></span> ALBA</span></div></footer>
-  <script src="data/content.js?v=20260911-2"></script>
-  <script src="app.js?v=20260911-2"></script>
-</body>
-</html>
+  <footer><div class="container footer-wrap"><div><strong>ALBA</strong><p>Noticias que despiertan.</p></div><span>© <span id="year"></span> ALBA</span></div></footer>
+  <script src="data/content.js?v=20260911-4"></script><script src="app.js?v=20260911-4"></script>
+</body></html>
