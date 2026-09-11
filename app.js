@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded',()=>{
  const grid=document.getElementById('newsGrid'),featured=document.getElementById('featuredNews'),filters=document.getElementById('categoryFilters'),sourceFilters=document.getElementById('sourceFilters'),input=document.getElementById('searchInput'),empty=document.getElementById('emptyState'),searchBar=document.getElementById('searchBar');
  let activeCategory='Todas',activeSource='Todas',news=[],categories=[],sources=[];
  const fallbackCategories=['Honduras','Internacional','Política','Economía','Deportes','Salud','Tecnología','Ciencia','Clima','Tendencias'];
- const fallbackSources=['BBC Mundo','BBC News World','BBC Honduras','EL PAÍS'];
+ const fallbackSources=['El Heraldo Honduras','Tu Nota Honduras','BBC Mundo','BBC News World','EL PAÍS'];
  const escapeHtml=(v='')=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const safeImage=(v='')=>{try{const u=new URL(v);return /^https?:$/.test(u.protocol)?u.href:''}catch{return ''}};
  const formatDate=v=>v?new Date(v).toLocaleString('es-HN',{dateStyle:'medium',timeStyle:'short'}):'';
