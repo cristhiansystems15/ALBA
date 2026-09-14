@@ -1,0 +1,37 @@
+/* ALBA · Utility cards premium */
+.utility-strip{padding:16px 0;background:linear-gradient(180deg,#f3f6fa,#eef2f7);border-bottom:1px solid #dfe5ec}
+.utility-grid{gap:14px}
+.utility-card{position:relative;min-height:88px;border:1px solid #dce3eb;border-radius:18px;padding:13px 15px;background:linear-gradient(145deg,#fff,#f9fbfd);box-shadow:0 8px 24px rgba(7,17,31,.06);overflow:hidden;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.utility-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#0b63ce,#16c7f2);opacity:.9}
+.utility-card:after{content:"";position:absolute;width:90px;height:90px;right:-42px;top:-48px;border-radius:50%;background:radial-gradient(circle,rgba(22,199,242,.11),transparent 68%);pointer-events:none}
+.utility-card:hover{transform:translateY(-3px);border-color:#cbd7e4;box-shadow:0 14px 30px rgba(7,17,31,.1)}
+.utility-icon{position:relative;width:43px;height:43px;border-radius:13px;background:linear-gradient(145deg,#07111f,#123052);box-shadow:0 7px 16px rgba(7,17,31,.16);font-size:18px;z-index:1}
+.utility-main,.utility-card>div:not(.utility-icon){position:relative;z-index:1}
+.utility-card span,.utility-calendar-head span{font-size:8px;letter-spacing:.17em;color:#7c8999}
+.utility-card strong{font-size:19px;letter-spacing:-.02em}
+.utility-card small{font-size:8px;letter-spacing:.08em;color:#98a2b3}
+.utility-card em{display:block;font-style:normal;font-size:8px;color:#98a2b3;margin-top:4px;white-space:nowrap}
+.buy-sell{display:flex;gap:16px;margin-top:2px}
+.buy-sell>div{display:flex;flex-direction:column;gap:0}
+.buy-sell strong{font-family:"Space Grotesk",sans-serif;font-size:16px;line-height:1.1}
+.buy-sell small{font-weight:800}
+.clock-card{background:linear-gradient(145deg,#07111f,#0d2035);border-color:rgba(22,199,242,.2);color:#fff}
+.clock-card:before{background:linear-gradient(180deg,#16c7f2,#0b63ce)}
+.clock-card:after{background:radial-gradient(circle,rgba(22,199,242,.2),transparent 68%)}
+.clock-card span{color:#91a2b7}
+.clock-card strong{font-family:"Space Grotesk",monospace;font-size:22px;letter-spacing:.04em;color:#fff}
+.clock-card small{color:#9eacbc}
+.clock-card .utility-icon{background:linear-gradient(145deg,#123052,#0b63ce);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.calendar-card{padding:10px 13px;background:linear-gradient(145deg,#fff,#f7fafc)}
+.utility-calendar-head{position:relative;z-index:2;margin-bottom:5px}
+.utility-calendar-head button{border:1px solid rgba(255,255,255,.14);background:#07111f;border-radius:8px;padding:5px 9px;font-size:8px;letter-spacing:.08em;box-shadow:0 4px 10px rgba(7,17,31,.12)}
+.utility-calendar-head button:hover{background:#0b63ce}
+.mini-calendar-title{font-size:12px;font-weight:800;color:#07111f;margin-bottom:5px}
+.mini-calendar-week span{font-size:7px;font-weight:900;color:#98a2b3}
+.mini-calendar-days{gap:3px}
+.calendar-day,.empty-day{height:18px;line-height:18px;font-size:8px}
+.calendar-day{border-radius:6px;transition:.15s ease}
+.calendar-day:hover{background:#e8f6fb;color:#0b63ce}
+.calendar-day.today{background:linear-gradient(135deg,#07111f,#0b63ce);box-shadow:0 3px 8px rgba(11,99,206,.2)}
+@media(max-width:700px){.utility-card{min-height:82px}.buy-sell{gap:11px}.buy-sell strong{font-size:14px}.clock-card strong{font-size:19px}.utility-icon{width:38px;height:38px}.utility-card em{font-size:7px}}
+@media(max-width:430px){.utility-card{min-height:78px;padding:10px}.utility-card strong{font-size:15px}.clock-card strong{font-size:17px}.calendar-card{padding:9px}.calendar-day,.empty-day{height:17px;line-height:17px}}
