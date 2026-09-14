@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ALBA — Noticias, contexto y análisis para entender lo que pasa.">
-  <meta name="theme-color" content="#07111f">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ALBA — Noticias, contexto y análisis para entender lo que pasa."><meta name="theme-color" content="#07111f">
   <title>ALBA | Noticias y contexto</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles-base.css?v=20260914-1">
-  <link rel="stylesheet" href="styles.css?v=20260914-5">
+  <link rel="stylesheet" href="styles-base.css?v=20260914-1"><link rel="stylesheet" href="styles.css?v=20260914-6">
 </head>
 <body>
 <header class="site-header"><div class="container nav-wrap"><a class="brand" href="#inicio" aria-label="ALBA inicio"><span class="brand-mark">A</span><span><strong>ALBA</strong><small>Noticias · Contexto · Análisis</small></span></a><nav aria-label="Navegación principal"><a href="#noticias">Noticias</a><a href="#secciones">Secciones</a><a href="#honduras">Honduras</a><a href="#internacional">Internacional</a><a href="#analisis">Análisis</a></nav><button class="search-toggle" id="searchToggle" aria-label="Abrir buscador">⌕</button></div></header>
 <div class="search-bar" id="searchBar"><div class="container search-inner"><input id="searchInput" type="search" placeholder="¿Qué quieres saber?" autocomplete="off"><button id="searchClose" aria-label="Cerrar buscador">×</button></div></div>
 <main id="inicio">
 <section class="utility-strip" aria-label="Información útil"><div class="container utility-grid">
-<div class="utility-card currency-card"><div class="utility-icon">$</div><div><span>DÓLAR</span><strong id="usdRate">Cargando…</strong><small id="usdDate">Referencia en HNL</small></div></div>
-<div class="utility-card currency-card"><div class="utility-icon">€</div><div><span>EURO</span><strong id="eurRate">Cargando…</strong><small id="eurDate">Referencia en HNL</small></div></div>
+<div class="utility-card currency-card"><div class="utility-icon">$</div><div class="utility-main"><span>DÓLAR / USD</span><div class="buy-sell"><div><small>COMPRA</small><strong id="usdBuy">Cargando…</strong></div><div><small>VENTA</small><strong id="usdSell">Cargando…</strong></div></div><em id="usdDate">Referencia BCH</em></div></div>
+<div class="utility-card currency-card"><div class="utility-icon">€</div><div class="utility-main"><span>EURO / EUR</span><div class="buy-sell"><div><small>COMPRA</small><strong id="eurBuy">Cargando…</strong></div><div><small>VENTA</small><strong id="eurSell">Cargando…</strong></div></div><em id="eurDate">Referencia internacional</em></div></div>
 <div class="utility-card clock-card"><div class="utility-icon">◷</div><div><span>HORA HONDURAS</span><strong id="liveClock">--:--:--</strong><small id="liveDate">—</small></div></div>
 <div class="utility-card calendar-card"><div class="utility-calendar-head"><span>CALENDARIO</span><button id="calendarToday" type="button">HOY</button></div><div class="mini-calendar" id="miniCalendar"></div></div>
 </div></section>
@@ -28,9 +24,6 @@
 <section class="section band" id="honduras"><div class="container split"><div><p class="eyebrow">HONDURAS</p><h2>Lo que importa en casa.</h2></div><p>Noticias nacionales organizadas para distinguir los hechos, conocer su contexto y entender cómo pueden afectar a la población.</p></div></section>
 <section class="section" id="internacional"><div class="container split"><div><p class="eyebrow">INTERNACIONAL</p><h2>El mundo, explicado.</h2></div><p>Una lectura clara de los acontecimientos internacionales y de las historias que pueden tener impacto en nuestra región.</p></div></section>
 <section class="section dark" id="analisis"><div class="container analysis-intro"><p class="eyebrow">EL MÉTODO ALBA</p><h2>No solo te contamos qué pasó.<br><span>Te ayudamos a entenderlo.</span></h2><div class="analysis-points"><div><strong>01</strong><h3>¿Qué pasó?</h3><p>Un resumen claro de los hechos principales y su fuente.</p></div><div><strong>02</strong><h3>¿Por qué importa?</h3><p>Contexto para entender la relevancia de la noticia.</p></div><div><strong>03</strong><h3>¿Qué sigue?</h3><p>Escenarios posibles, separados de los hechos confirmados.</p></div></div></div></section>
-</main>
-<footer><div class="container footer-wrap"><div><strong>ALBA</strong><p>Noticias · Contexto · Análisis</p></div><span>© <span id="year"></span> ALBA</span></div></footer>
-<script src="data/content.js?v=20260914-1"></script>
-<script src="utilities.js?v=20260914-1"></script>
-<script src="app.js?v=20260914-4"></script>
+</main><footer><div class="container footer-wrap"><div><strong>ALBA</strong><p>Noticias · Contexto · Análisis</p></div><span>© <span id="year"></span> ALBA</span></div></footer>
+<script src="data/content.js?v=20260914-1"></script><script src="utilities.js?v=20260914-2"></script><script src="app.js?v=20260914-4"></script>
 </body></html>
