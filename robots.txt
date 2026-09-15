@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://cristhianssystems15.github.io/ALBA/sitemap.xml
