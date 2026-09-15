@@ -10,10 +10,22 @@ const feeds = [
 const clean=(x:string)=>x.replace(/<!\[CDATA\[|\]\]>/g,"").replace(/<[^>]*>/g," ").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/\s+/g," ").trim();
 const tag=(x:string,t:string)=>{const m=x.match(new RegExp(`<${t}(?:\\s[^>]*)?>([\\s\\S]*?)</${t}>`,"i"));return m?clean(m[1]):""};
 const slugify=(x:string)=>x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,100);
+
+async function requestIllustration(article:{id:string;title:string;summary:string;category:string;source:string}){
+  const gemini=Deno.env.get("GEMINI_API_KEY")||"";
+  const service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"";
+  if(!gemini||!service)return;
+  try{
+    const r=await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/generate-illustration`,{method:"POST",headers:{Authorization:`Bearer ${service}`,"Content-Type":"application/json"},body:JSON.stringify(article)});
+    if(!r.ok)console.warn(`Gemini illustration ${article.id}: HTTP ${r.status}`);
+  }catch(e){console.warn(`Gemini illustration ${article.id}:`,e)}
+}
+
 Deno.serve(async(req)=>{
  if(req.method!=="POST") return Response.json({error:"POST required"},{status:405});
  const db=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
- const result={ok:true,sources:0,scanned:0,inserted:0,skipped:0,errors:[] as string[]};
+ const result={ok:true,sources:0,scanned:0,inserted:0,skipped:0,illustrations_started:0,errors:[] as string[]};
+ const illustrationLimit=6;
  for(const f of feeds){try{
   const src=await db.from("sources").select("id").eq("name",f.name).maybeSingle(); if(src.error) throw new Error(`source lookup: ${src.error.message}`); if(!src.data?.id) throw new Error("source not found"); const sourceId=src.data.id; result.sources++;
   const cat=await db.from("categories").select("id").eq("name",f.category).maybeSingle(); if(cat.error) throw new Error(`category lookup: ${cat.error.message}`);
@@ -26,6 +38,11 @@ Deno.serve(async(req)=>{
    const article=await db.from("articles").insert({source_id:sourceId,title,slug,summary:summary.slice(0,1200),content:summary,category_id:cat.data?.id??null,canonical_url:canonicalUrl,status:"published",verification_status:"unverified",published_at:published,fetched_at:new Date().toISOString(),updated_at:new Date().toISOString(),metadata:{ingested_by:"ingest-news",source:f.name}}).select("id").single();
    if(article.error||!article.data){result.errors.push(`${f.name}: article insert: ${article.error?.message??"no id"}`);continue;}
    const link=await db.from("article_sources").insert({article_id:article.data.id,source_id:sourceId,source_url:canonicalUrl,is_primary:true}); if(link.error) result.errors.push(`${f.name}: article_sources: ${link.error.message}`); else result.inserted++;
+   if(!link.error&&result.illustrations_started<illustrationLimit){
+     result.illustrations_started++;
+     const task=()=>requestIllustration({id:article.data.id,title,summary:summary.slice(0,1200),category:f.category,source:f.name});
+     if(typeof EdgeRuntime!=="undefined"&&typeof EdgeRuntime.waitUntil==="function") EdgeRuntime.waitUntil(task()); else await task();
+   }
   }
   await db.from("sources").update({last_fetched_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq("id",sourceId);
  }catch(err){result.ok=false;result.errors.push(`${f.name}: ${err instanceof Error?err.message:String(err)}`)}}
