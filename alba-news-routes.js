@@ -1,10 +1,29 @@
 (()=>{
- const init=()=>{
-  const input=document.getElementById('searchInput');
-  const route=()=>{const id=new URLSearchParams(location.search).get('noticia');if(!id)return;let tries=0;const timer=setInterval(()=>{const btn=document.querySelector(`.article-open[data-id="${CSS.escape(id)}"]`);if(btn){clearInterval(timer);btn.click()}if(++tries>30)clearInterval(timer)},300)};
-  document.addEventListener('click',e=>{const b=e.target.closest('.article-open[data-id]');if(!b)return;const id=b.dataset.id;if(!id)return;history.pushState({noticia:id},'',`?noticia=${encodeURIComponent(id)}`);});
-  window.addEventListener('popstate',()=>{const modal=document.querySelector('.article-modal.open');if(modal&&!new URLSearchParams(location.search).get('noticia')){modal.classList.remove('open');document.body.classList.remove('modal-open')}});
-  route();
- };
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+  /*
+   * ALBA NEWS usa el modal como vista de noticia, no como una ruta.
+   * No escribimos ?noticia=... en la URL: hacerlo provoca que GitHub Pages
+   * conserve una noticia al recargar y puede hacer que el sitio parezca no iniciar.
+   */
+  const init=()=>{
+    try{
+      if(window.history?.scrollRestoration) window.history.scrollRestoration='manual';
+      const cleanUrl=()=>{
+        if(location.search.includes('noticia=')){
+          history.replaceState(null,document.title,location.pathname+location.hash);
+        }
+      };
+      cleanUrl();
+      window.addEventListener('pageshow',()=>cleanUrl());
+      document.addEventListener('click',e=>{
+        const b=e.target.closest?.('.article-open[data-id]');
+        if(!b)return;
+        /* Opening a story must never create a persistent browser route. */
+        cleanUrl();
+      },true);
+    }catch(err){
+      console.warn('ALBA route guard:',err);
+    }
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
 })();
