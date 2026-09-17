@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded',()=>{
  const fallback=(cat='Actualidad',source='Fuente')=>{return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675"><rect width="1200" height="675" fill="#07111f"/><rect x="55" y="55" width="1090" height="565" rx="28" fill="#0c1c30" stroke="#16c7f2" stroke-opacity=".45"/><text x="90" y="145" fill="#16c7f2" font-size="30" font-family="Arial" font-weight="700">${esc(source)}</text><text x="90" y="255" fill="#fff" font-size="24" font-family="Arial">Fotografía de la fuente no disponible</text><text x="90" y="390" fill="#fff" font-size="72" font-weight="700" font-family="Arial">${esc(cat)}</text><text x="90" y="500" fill="#91a7bd" font-size="22" font-family="Arial">ALBA NEWS · fuente identificada</text></svg>`)}`};
  const imgAttrs=(url,alt,cat,source,loading='')=>`src="${esc(url||fallback(cat,source))}" alt="${esc(alt)}" referrerpolicy="no-referrer" ${loading?`loading="${loading}"`:''} onerror="this.onerror=null;this.src='${fallback(cat,source)}'"`;
  const date=v=>v?new Date(v).toLocaleString('es-HN',{dateStyle:'medium',timeStyle:'short'}):'';
- /* Supabase can occasionally have a slow first response. Retry the REST request instead of leaving ALBA empty. */
+ /* Supabase publishable keys are API keys, not JWTs. Send them only in apikey. */
  const get=async(path,attempt=0)=>{
    const c=new AbortController();
    const timer=setTimeout(()=>c.abort(),20000);
    try{
-     const r=await fetch(`${ALBA_SUPABASE_URL}/rest/v1/${path}`,{headers:{apikey:ALBA_SUPABASE_KEY,Authorization:`Bearer ${ALBA_SUPABASE_KEY}`,Accept:'application/json'},cache:'no-store',signal:c.signal});
+     const r=await fetch(`${ALBA_SUPABASE_URL}/rest/v1/${path}`,{headers:{apikey:ALBA_SUPABASE_KEY,Accept:'application/json'},cache:'no-store',signal:c.signal});
      if(!r.ok)throw new Error(`Supabase HTTP ${r.status}`);
      return await r.json();
    }catch(e){
