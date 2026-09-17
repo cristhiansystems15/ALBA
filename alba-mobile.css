@@ -1,0 +1,110 @@
+/* ALBA NEWS — experiencia móvil prioritaria */
+@media (max-width: 700px){
+  html{scroll-padding-top:66px}
+  body{overflow-x:hidden}
+  .container{width:calc(100% - 24px)}
+  .site-header{position:sticky}
+  .nav-wrap{min-height:62px;gap:8px}
+  .brand-logo{width:48px;height:48px;flex-basis:48px}
+  .search-toggle{width:40px;height:40px;border-radius:11px}
+
+  .utility-strip{padding:8px 0}
+  .utility-grid{gap:7px}
+  .utility-card{min-height:64px;border-radius:13px;padding:8px 9px;gap:7px}
+  .utility-icon{width:30px;height:30px;border-radius:9px;font-size:14px}
+  .utility-card strong{font-size:14px}
+  .utility-card span,.utility-calendar-head span{font-size:8px}
+  .utility-card small{font-size:8px}
+  .mini-calendar-title{font-size:9px}
+  .calendar-day,.empty-day{font-size:7px;line-height:15px;height:15px}
+
+  .hero{padding:42px 0 34px}
+  h1{font-size:38px;line-height:1.02;margin-bottom:16px}
+  .hero-text{font-size:14px;line-height:1.55}
+  .hero-actions{margin-top:20px;gap:8px}
+  .button{padding:11px 14px;font-size:12px}
+  .hero-stats{gap:12px;margin-top:28px;padding-top:15px}
+  .hero-stats small{font-size:9px}
+  .hero-panel{min-height:210px;border-radius:18px;padding:18px}
+  .panel-title{font-size:27px}
+  .panel-items{font-size:10px;gap:6px}
+  .panel-items span{padding:7px 8px}
+
+  .section{padding:42px 0}
+  .section-heading{margin-bottom:20px}
+  .section-heading h2{font-size:27px}
+  .section-heading>p{font-size:11px;line-height:1.45;margin-top:9px}
+  .news-livebar{margin:12px 0 14px;padding:8px 10px;border-radius:12px;font-size:9px;gap:5px}
+  .live-dot{width:6px;height:6px}
+
+  /* Fuentes y secciones: chips horizontales, no bloques altos */
+  .filter-section{margin:8px 0 11px}
+  .filter-label{font-size:8px;margin-bottom:5px}
+  .filter-section .filters{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;margin:0;padding:1px 1px 5px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .filter-section .filters::-webkit-scrollbar{display:none}
+  .filter-section .filter{flex:0 0 auto;width:auto;min-width:max-content;min-height:31px;padding:7px 10px;border-radius:999px;font-size:10px;box-shadow:none}
+  .filter-section .filter:before{display:none}
+
+  .featured-slot{margin:16px 0 14px}
+  .featured{border-radius:15px;box-shadow:0 7px 20px rgba(7,17,31,.09)}
+  .featured-media,.featured-media img{min-height:185px;height:185px}
+  .featured-content{padding:14px 15px 16px}
+  .featured-content h2{font-size:21px;margin:7px 0 6px}
+  .featured-content p{font-size:11px;line-height:1.4;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .featured-meta{font-size:9px;margin-top:8px}
+  .featured-link{font-size:10px;margin-top:9px}
+
+  /* Noticias: lista compacta, escaneable con el pulgar */
+  .cards.three{grid-template-columns:1fr;gap:7px;margin-top:9px}
+  .cards.three .card{display:grid;grid-template-columns:104px minmax(0,1fr);min-height:104px;height:104px;border-radius:13px;box-shadow:0 3px 12px rgba(7,17,31,.055)}
+  .cards.three .card-image-wrap{grid-column:1;grid-row:1;width:104px;height:104px;min-height:104px;border-radius:12px 0 0 12px}
+  .cards.three .card-body{grid-column:2;grid-row:1;padding:8px 9px;min-width:0;overflow:hidden}
+  .cards.three .card-meta{gap:4px;min-height:15px;overflow:hidden;white-space:nowrap}
+  .cards.three .card-meta .tag,.cards.three .card-meta .source-tag{font-size:7px;padding:3px 5px;max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cards.three .card h3{font-size:13px;line-height:1.17;margin:3px 0 2px;-webkit-line-clamp:3}
+  .cards.three .card p{font-size:9px;line-height:1.28;margin:0;-webkit-line-clamp:2}
+  .cards.three .card-footer{padding-top:2px;margin-top:auto;gap:5px}
+  .cards.three time{font-size:7px}
+  .cards.three .read-more{font-size:8px;padding:2px 0}
+
+  /* Modal de lectura cómodo para móvil */
+  .article-view{left:0;top:0;transform:none;width:100%;height:100dvh;max-height:none;border-radius:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .article-close{position:fixed;right:10px;top:10px;width:40px;height:40px}
+  .article-view-image{height:220px}
+  .article-view-content{padding:20px 16px 30px}
+  .article-view-content h2{font-size:27px;line-height:1.08}
+  .article-view-content section{margin-top:20px}
+  .article-view-content section p{font-size:13px;line-height:1.6}
+  .insight-box,.impact-box,.next-box,.key-points-box,.related-box{padding:15px;border-radius:13px}
+  .key-points-box li{font-size:12px}
+  .related-item{padding:10px 11px}
+
+  /* Secciones inferiores: menos espacio vertical */
+  .section-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .section-link{min-height:66px;padding:10px 10px 9px 13px;border-radius:12px}
+  .section-link:before{width:3px;top:11px;bottom:11px}
+  .section-link span{font-size:17px}
+  .section-link strong{font-size:11px}
+  .section-link small{font-size:7px}
+  .split{margin-bottom:0}
+  footer{padding:25px 0}
+  .footer-wrap{display:block;font-size:10px}
+  .footer-wrap>span{display:block;margin-top:8px}
+}
+
+@media (max-width: 430px){
+  .container{width:calc(100% - 20px)}
+  .utility-grid{gap:5px}
+  .utility-card{min-height:60px;padding:7px}
+  .utility-icon{width:27px;height:27px}
+  .hero{padding-top:34px}
+  h1{font-size:34px}
+  .hero-text{font-size:13px}
+  .hero-panel{min-height:190px}
+  .featured-media,.featured-media img{min-height:165px;height:165px}
+  .cards.three .card{grid-template-columns:94px minmax(0,1fr);height:94px;min-height:94px}
+  .cards.three .card-image-wrap{width:94px;height:94px;min-height:94px}
+  .cards.three .card h3{font-size:12px;-webkit-line-clamp:3}
+  .cards.three .card p{font-size:8px}
+  .section{padding:35px 0}
+}
