@@ -20,7 +20,6 @@
   tools.querySelector('[data-alba-share]').onclick=async()=>{const title=modal.querySelector('#articleModalTitle')?.textContent?.trim()||'ALBA NEWS';try{if(navigator.share){await navigator.share({title:`${title} | ALBA NEWS`,text:'Lee el análisis en ALBA NEWS',url:location.href});status.textContent='Enlace compartido.'}else{await navigator.clipboard.writeText(location.href);status.textContent='Enlace copiado.'}}catch{status.textContent='No se completó el uso compartido.'}};
   tools.querySelector('[data-alba-copy]').onclick=async()=>{try{await navigator.clipboard.writeText(location.href);status.textContent='Enlace copiado al portapapeles.'}catch{status.textContent='No se pudo copiar el enlace.'}};
  };
- const observe=new MutationObserver(()=>{addTools();setSEO()});
- const init=()=>{observe.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});addTools();setSEO();window.addEventListener('popstate',()=>{setTimeout(()=>{if(!document.querySelector('.article-modal.open')){document.title='ALBA NEWS | Noticias y contexto'}else setSEO()},50)})};
+ const init=()=>{addTools();setSEO();window.addEventListener('alba:article-open',()=>{addTools();setSEO()});window.addEventListener('alba:article-close',()=>{document.title='ALBA NEWS | Noticias y contexto'});window.addEventListener('popstate',()=>{setTimeout(()=>{if(!document.querySelector('.article-modal.open'))document.title='ALBA NEWS | Noticias y contexto';else setSEO()},50)})};
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
