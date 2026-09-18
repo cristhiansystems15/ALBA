@@ -1,23 +1,27 @@
-# ALBA
+# ALBA NEWS
 
-**Portal de información, datos, tendencias e investigaciones.**
+**Portal de noticias, contexto y análisis.**
 
-> Información que despierta.
+## Arquitectura actual
 
-## Visión
-ALBA nace como una plataforma modular para presentar información clara, datos, tendencias e investigaciones en una experiencia web moderna y accesible.
+- `index.html` — página principal y estructura del portal.
+- `app.js` — carga y renderizado de noticias desde Supabase.
+- `utilities.js` — reloj, calendario e indicadores.
+- `styles-base.css` + `styles.css` — estilos principales.
+- `alba-*.css/js` — módulos activos de búsqueda, lectura, navegación, filtros y experiencia móvil.
+- `assets/alba-logo.svg` — identidad visual.
+- `admin/` — panel administrativo en desarrollo.
+- `backend/supabase/` — esquema y Edge Functions de Supabase.
+- `robots.txt` — configuración para buscadores.
 
-## Arquitectura inicial
+## Datos
 
-- `index.html` — entrada y experiencia principal.
-- `styles.css` — sistema visual y diseño responsive.
-- `app.js` — comportamiento global del frontend.
-- `data/` — configuración y futuras fuentes de datos.
-- `modules/` — módulos funcionales independientes.
-- `assets/` — imágenes, iconos y recursos visuales.
-- `.github/workflows/` — automatización y despliegue futuro.
+La portada consulta las noticias publicadas directamente desde Supabase. Las claves usadas en el frontend son claves públicas de Supabase; no se almacenan secretos administrativos en el repositorio.
+
+## Limpieza
+
+Se eliminaron archivos antiguos, duplicados y prototipos que ya no participan en la carga del portal, para reducir conflictos, solicitudes innecesarias y mantenimiento.
 
 ## Estado
-**Versión 0.1.0 — Fundación inicial.**
 
-La primera etapa establece la base visual y estructural. Los módulos de noticias, datos, tendencias e investigaciones se irán conectando progresivamente.
+**ALBA NEWS — frontend activo con Supabase.**
