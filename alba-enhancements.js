@@ -24,7 +24,5 @@ document.addEventListener('DOMContentLoaded',()=>{
    list.appendChild(item);
   });
  };
- const observe=new MutationObserver(()=>{if(getCards().length)addTopStories()});
- observe.observe(grid,{childList:true});
- setTimeout(addTopStories,900);
+ window.addEventListener('alba:news-rendered',addTopStories);
 });
