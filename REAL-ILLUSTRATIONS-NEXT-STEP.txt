@@ -1,1 +1,0 @@
-The realistic illustration generator is implemented in backend/supabase/functions/generate-illustration/index.ts and the browser engine is in alba-real-illustrations.js. Production activation requires deploying the Edge Function and setting OPENAI_API_KEY as a Supabase secret. Do not expose that key in the frontend or repository.
