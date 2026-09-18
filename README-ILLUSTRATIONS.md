@@ -1,1 +1,0 @@
-ALBA NEWS realistic illustration pipeline is ready in the repository. The browser-side engine calls the protected Supabase Edge Function only when an image enters the viewport. Generated WebP files are cached in the public `alba-illustrations` Storage bucket. The OpenAI API key must remain a Supabase secret.
