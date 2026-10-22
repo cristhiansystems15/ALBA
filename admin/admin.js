@@ -1,53 +1,29 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const rows = document.getElementById('articleRows');
-  const views = [...document.querySelectorAll('.view')];
-
-  // Admin UI shell: live backend connection will be added after authentication is configured.
-  const articles = [
-    { title: 'ALBA comienza una nueva etapa de información abierta', category: 'Actualidad', status: 'Publicado' },
-    { title: 'Comprender antes de compartir', category: 'Análisis', status: 'Publicado' },
-    { title: 'Datos para descubrir nuevas perspectivas', category: 'Tecnología', status: 'Publicado' }
-  ];
-
-  if (rows) {
-    rows.innerHTML = articles.map(a => `
-      <div class="row">
-        <span>${escapeHtml(a.title)}</span>
-        <span>${escapeHtml(a.category)}</span>
-        <span><b class="status">${escapeHtml(a.status)}</b></span>
-        <span>•••</span>
-      </div>
-    `).join('');
-  }
-
-  function show(id) {
-    views.forEach(view => view.classList.toggle('hidden', view.id !== id));
-  }
-
-  document.querySelectorAll('a[href^="#"]').forEach(link => {
-    link.addEventListener('click', event => {
-      const id = link.getAttribute('href').slice(1);
-      if (!document.getElementById(id)) return;
-      event.preventDefault();
-      show(id === 'editor' ? 'editor' : 'dashboard');
-    });
-  });
-
-  document.getElementById('publish')?.addEventListener('click', () => {
-    const title = document.getElementById('title')?.value.trim();
-    if (!title) {
-      alert('Escribe un título antes de publicar.');
-      return;
-    }
-    alert('El editor está preparado. La publicación requiere autenticación del administrador.');
-  });
-
-  function escapeHtml(value) {
-    return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
-  }
-});
+const SUPABASE_URL="https://xuilkvsehlnkqtlfkblw.supabase.co";
+const SUPABASE_KEY="sb_publishable_Mdr55DRXLuqCXIYjh5hepQ_Lx3T3-Pg";
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slugify=v=>String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,100);
+const date=v=>v?new Date(v).toLocaleString('es-HN',{dateStyle:'medium',timeStyle:'short'}):'—';
+let accessToken=localStorage.getItem('alba_admin_token')||'',user=null,articles=[],categories=[],sources=[],authMode='login';
+const api=async(path,{method='GET',body=null,auth=true}={})=>{const headers={apikey:SUPABASE_KEY,Accept:'application/json','Content-Type':'application/json',Prefer:'return=representation'};if(auth&&accessToken)headers.Authorization=`Bearer ${accessToken}`;const r=await fetch(`${SUPABASE_URL}/rest/v1/${path}`,{method,headers,body:body?JSON.stringify(body):undefined});if(!r.ok){let msg=`HTTP ${r.status}`;try{const j=await r.json();msg=j.message||j.error_description||j.hint||msg}catch{}throw new Error(msg)}return r.status===204?null:r.json()};
+const authApi=async(path,body)=>{const r=await fetch(`${SUPABASE_URL}/auth/v1/${path}`,{method:'POST',headers:{apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.msg||j.error_description||j.message||`Auth ${r.status}`);return j};
+function message(text,ok=false){$('authMessage').textContent=text||'';$('authMessage').style.color=ok?'#159a68':''}
+function editorMessage(text,ok=false){$('editorMessage').textContent=text||'';$('editorMessage').style.color=ok?'#159a68':''}
+function setAuthScreen(show){$('authScreen').classList.toggle('hidden',!show);$('appShell').classList.toggle('hidden',show)}
+async function ensureAdmin(){try{const rows=await api(`admin_users?user_id=eq.${encodeURIComponent(user.id)}&select=user_id`);if(!rows.length){await api('admin_users',{method:'POST',body:{user_id:user.id}});return true}return true}catch(e){console.error(e);return false}}
+async function loginSuccess(data){accessToken=data.access_token;user=data.user;localStorage.setItem('alba_admin_token',accessToken);if(!await ensureAdmin()){message('No fue posible activar el acceso editorial.');return}setAuthScreen(false);await loadAll()}
+async function restore(){if(!accessToken)return setAuthScreen(true);try{const r=await fetch(`${SUPABASE_URL}/auth/v1/user`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${accessToken}`}});if(!r.ok)throw new Error('Sesión expirada');user=await r.json();if(!await ensureAdmin())throw new Error('Sin permisos editoriales');setAuthScreen(false);await loadAll()}catch(e){localStorage.removeItem('alba_admin_token');accessToken='';setAuthScreen(true)}}
+async function loadAll(){ $('syncStatus').textContent='● Sincronizando';try{const [a,c,s]=await Promise.all([api('articles?select=id,title,slug,summary,subtitle,status,editorial_status,verification_status,published_at,created_at,updated_at,featured,category_id,source_id&order=created_at.desc&limit=500'),api('categories?select=id,name,slug,is_active&order=name'),api('sources?select=id,name,url,rss_url,is_active,country,language,priority,last_fetched_at&order=priority,name')]);articles=a||[];categories=c||[];sources=s||[];renderAll();$('syncStatus').textContent='● Conectado'}catch(e){console.error(e);$('syncStatus').textContent='● Error'}}
+const catName=id=>categories.find(x=>x.id===id)?.name||'Sin categoría';const srcName=id=>sources.find(x=>x.id===id)?.name||'Fuente no definida';
+function statusBadge(a){const st=a.status==='published'?'published':(a.editorial_status==='review'?'review':'draft');const label=a.status==='published'?'Publicado':a.editorial_status==='review'?'En revisión':a.status==='archived'?'Archivado':'Borrador';return `<span class="badge ${st}">${label}</span>`}
+function renderDashboard(){const pub=articles.filter(a=>a.status==='published').length,rev=articles.filter(a=>a.editorial_status==='review').length,draft=articles.filter(a=>a.status==='draft').length;$('statPublished').textContent=pub;$('statReview').textContent=rev;$('statDraft').textContent=draft;$('statSources').textContent=sources.filter(s=>s.is_active!==false).length;$('recentRows').innerHTML=articles.slice(0,7).map(a=>`<div class="article-row"><div><strong>${esc(a.title)}</strong><small>${esc(catName(a.category_id))} · ${esc(srcName(a.source_id))}</small></div><span>${statusBadge(a)}</span><small>${esc(date(a.created_at))}</small></div>`).join('')||'<p class="section-copy">No hay artículos todavía.</p>'}
+function renderArticles(){const q=($('articleSearch')?.value||'').toLowerCase().trim(),filter=$('articleStatus')?.value||'all';const rows=articles.filter(a=>(filter==='all'||a.status===filter||(filter==='review'&&a.editorial_status==='review'))&&(!q||`${a.title} ${a.summary||''}`.toLowerCase().includes(q)));$('articleTable').innerHTML=rows.map(a=>`<div class="table-row"><span><strong>${esc(a.title)}</strong><small>${esc(a.subtitle||'')}</small></span><span>${esc(catName(a.category_id))}</span><span>${statusBadge(a)}</span><span>${esc(date(a.published_at||a.created_at))}</span><span class="row-actions">${a.status!=='published'?`<button class="icon-btn" title="Publicar" data-action="publish" data-id="${esc(a.id)}">✓</button>`:''}<button class="icon-btn" title="Eliminar" data-action="delete" data-id="${esc(a.id)}">×</button></span></div>`).join('')||'<div class="table-row"><span>No se encontraron artículos.</span></div>'}
+function renderSources(){$('sourceCards').innerHTML=sources.map(s=>`<article class="source-card"><h3>${esc(s.name)}</h3><p>${esc(s.country||'Fuente periodística')} · ${esc(s.language||'es')}</p><span class="source-state">${s.is_active===false?'● Inactiva':'● Activa'}</span></article>`).join('')||'<p class="section-copy">No hay fuentes configuradas.</p>'}
+function renderCategories(){const counts=Object.fromEntries(categories.map(c=>[c.id,0]));articles.forEach(a=>{if(counts[a.category_id]!=null)counts[a.category_id]++});$('categoryCards').innerHTML=categories.map(c=>`<article class="category-card"><h3>${esc(c.name)}</h3><p>${counts[c.id]||0} artículos · /${esc(c.slug)}</p></article>`).join('')}
+function renderCategorySelect(){$('category').innerHTML=categories.filter(c=>c.is_active!==false).map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}
+function renderAll(){renderDashboard();renderArticles();renderSources();renderCategories();renderCategorySelect()}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('hidden',v.id!==id));document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===id));const titles={dashboard:'Resumen editorial',articles:'Artículos',editor:'Nuevo artículo',sources:'Fuentes conectadas',categories:'Categorías'};$('pageTitle').textContent=titles[id]||'Centro editorial';window.scrollTo({top:0,behavior:'smooth'})}
+async function saveArticle(publish){const title=$('title').value.trim(),summary=$('summary').value.trim();if(!title||!summary){editorMessage('Completa al menos el título y el resumen.');return}const slugBase=slugify(title)||`noticia-${Date.now()}`;let slug=slugBase;if(articles.some(a=>a.slug===slug))slug=`${slugBase}-${Date.now().toString().slice(-6)}`;const loc=$('location').value.trim();const article={title,slug,subtitle:$('subtitle').value.trim(),summary,content:$('content').value.trim()||summary,category_id:$('category').value||null,status:publish?'published':'draft',editorial_status:publish?'published':'draft',verification_status:publish?'verified':'unverified',published_at:publish?new Date().toISOString():null,image_url:$('imageUrl').value.trim()||null,canonical_url:$('canonicalUrl').value.trim()||null,featured:$('featured').checked,author_name:user?.email||'ALBA NEWS',updated_at:new Date().toISOString(),country:loc.includes('Honduras')?'Honduras':null,department:loc||null,what_happened:$('whatHappened').value.trim(),why_it_matters:$('whyMatters').value.trim(),impact:$('impact').value.trim(),what_next:$('whatNext').value.trim(),key_points:[]};try{editorMessage(publish?'Publicando…':'Guardando borrador…');await api('articles',{method:'POST',body:article});editorMessage(publish?'¡Noticia publicada correctamente!':'Borrador guardado correctamente.',true);$('articleForm').reset();await loadAll();setTimeout(()=>showView(publish?'articles':'dashboard'),500)}catch(e){console.error(e);editorMessage(`No se pudo guardar: ${e.message}`)}}
+async function publishArticle(id){try{await api(`articles?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:{status:'published',editorial_status:'published',verification_status:'verified',published_at:new Date().toISOString(),updated_at:new Date().toISOString()}});await loadAll()}catch(e){alert(`No se pudo publicar: ${e.message}`)}}
+async function deleteArticle(id){if(!confirm('¿Eliminar este artículo? Esta acción no se puede deshacer.'))return;try{await api(`articles?id=eq.${encodeURIComponent(id)}`,{method:'DELETE'});await loadAll()}catch(e){alert(`No se pudo eliminar: ${e.message}`)}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('.auth-tab').forEach(b=>b.onclick=()=>{authMode=b.dataset.auth;document.querySelectorAll('.auth-tab').forEach(x=>x.classList.toggle('active',x===b));$('authSubmit').textContent=authMode==='login'?'Entrar al centro editorial':'Crear cuenta de administrador';message('')});$('authForm').onsubmit=async e=>{e.preventDefault();message('Procesando…');try{const email=$('authEmail').value.trim(),password=$('authPassword').value,data=await authApi(authMode==='login'?'token?grant_type=password':'signup',{email,password});if(authMode==='signup'&&!data.access_token){message('Cuenta creada. Revisa tu correo si Supabase solicita confirmación y luego inicia sesión.',true);return}await loginSuccess(data)}catch(err){message(err.message)}};document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>showView(b.dataset.go));document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>showView(b.dataset.view));$('logout').onclick=()=>{localStorage.removeItem('alba_admin_token');accessToken='';user=null;setAuthScreen(true);message('Sesión cerrada.',true)};$('articleForm').onsubmit=e=>{e.preventDefault();saveArticle(true)};$('saveDraft').onclick=()=>saveArticle(false);$('articleSearch').oninput=renderArticles;$('articleStatus').onchange=renderArticles;$('articleTable').onclick=e=>{const b=e.target.closest('[data-action]');if(!b)return;if(b.dataset.action==='publish')publishArticle(b.dataset.id);if(b.dataset.action==='delete')deleteArticle(b.dataset.id)};restore()});
