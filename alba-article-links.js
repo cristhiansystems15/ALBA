@@ -1,0 +1,1 @@
+document.addEventListener('click',event=>{const button=event.target.closest('.article-open');if(!button)return;const id=button.dataset.id;if(!id)return;event.preventDefault();event.stopImmediatePropagation();window.location.href=`article.html?id=${encodeURIComponent(id)}`},{capture:true});
