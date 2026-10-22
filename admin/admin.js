@@ -1,6 +1,7 @@
 const SUPABASE_URL="https://xuilkvsehlnkqtlfkblw.supabase.co";
 const SUPABASE_KEY="sb_publishable_Mdr55DRXLuqCXIYjh5hepQ_Lx3T3-Pg";
 const ADMIN_REDIRECT_URL="https://cristhiansystems15.github.io/ALBA/admin/";
+const BOOTSTRAP_ADMIN_URL=`${SUPABASE_URL}/functions/v1/bootstrap-admin`;
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const slugify=v=>String(v||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,100);
@@ -11,8 +12,8 @@ const authApi=async(path,body,query='')=>{const r=await fetch(`${SUPABASE_URL}/a
 function message(text,ok=false){$('authMessage').textContent=text||'';$('authMessage').style.color=ok?'#159a68':''}
 function editorMessage(text,ok=false){$('editorMessage').textContent=text||'';$('editorMessage').style.color=ok?'#159a68':''}
 function setAuthScreen(show){$('authScreen').classList.toggle('hidden',!show);$('appShell').classList.toggle('hidden',show)}
-async function ensureAdmin(){try{const rows=await api(`admin_users?user_id=eq.${encodeURIComponent(user.id)}&select=user_id`);if(!rows.length){await api('admin_users',{method:'POST',body:{user_id:user.id}});return true}return true}catch(e){console.error(e);return false}}
-async function loginSuccess(data){accessToken=data.access_token;user=data.user;localStorage.setItem('alba_admin_token',accessToken);if(!await ensureAdmin()){message('No fue posible activar el acceso editorial.');return}setAuthScreen(false);await loadAll()}
+async function ensureAdmin(){try{const r=await fetch(BOOTSTRAP_ADMIN_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'}});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||`HTTP ${r.status}`);return j.ok===true}catch(e){console.error('bootstrap-admin:',e);message(`No fue posible activar el acceso editorial: ${e.message}`);return false}}
+async function loginSuccess(data){accessToken=data.access_token;user=data.user;localStorage.setItem('alba_admin_token',accessToken);if(!await ensureAdmin()){localStorage.removeItem('alba_admin_token');accessToken='';return}setAuthScreen(false);await loadAll()}
 async function restore(){if(!accessToken)return setAuthScreen(true);try{const r=await fetch(`${SUPABASE_URL}/auth/v1/user`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${accessToken}`}});if(!r.ok)throw new Error('Sesión expirada');user=await r.json();if(!await ensureAdmin())throw new Error('Sin permisos editoriales');setAuthScreen(false);await loadAll()}catch(e){localStorage.removeItem('alba_admin_token');accessToken='';setAuthScreen(true)}}
 async function loadAll(){ $('syncStatus').textContent='● Sincronizando';try{const [a,c,s]=await Promise.all([api('articles?select=id,title,slug,summary,subtitle,status,editorial_status,verification_status,published_at,created_at,updated_at,featured,category_id,source_id&order=created_at.desc&limit=500'),api('categories?select=id,name,slug,is_active&order=name'),api('sources?select=id,name,url,rss_url,is_active,country,language,priority,last_fetched_at&order=priority,name')]);articles=a||[];categories=c||[];sources=s||[];renderAll();$('syncStatus').textContent='● Conectado'}catch(e){console.error(e);$('syncStatus').textContent='● Error'}}
 const catName=id=>categories.find(x=>x.id===id)?.name||'Sin categoría';const srcName=id=>sources.find(x=>x.id===id)?.name||'Fuente no definida';
