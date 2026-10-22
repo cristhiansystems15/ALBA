@@ -1,9 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>ALBA | Administración</title><link rel="stylesheet" href="admin.css"></head>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#07111f">
+<title>ALBA NEWS · Centro editorial</title><link rel="stylesheet" href="admin.css">
+</head>
 <body>
-<aside class="sidebar"><div class="admin-brand"><span>A</span><div><strong>ALBA</strong><small>Administración</small></div></div><nav><a class="active" href="#dashboard">▦ <span>Dashboard</span></a><a href="#articles">▤ <span>Artículos</span></a><a href="#editor">＋ <span>Nuevo artículo</span></a><a href="#categories">◇ <span>Categorías</span></a><a href="#sources">◎ <span>Fuentes</span></a><a href="#settings">⚙ <span>Configuración</span></a></nav><a class="back" href="../">← Volver a ALBA</a></aside>
-<main class="main"><header><div><p class="eyebrow">CENTRO DE CONTROL</p><h1>Buenos días, ALBA.</h1></div><div class="profile">Administrador <span>CA</span></div></header>
-<section id="dashboard" class="view"><div class="stats"><article><small>PUBLICADOS</small><strong>03</strong><span>Artículos activos</span></article><article><small>BORRADORES</small><strong>00</strong><span>Pendientes de edición</span></article><article><small>CATEGORÍAS</small><strong>06</strong><span>Clasificaciones</span></article><article><small>FUENTES</small><strong>00</strong><span>Por conectar</span></article></div><div class="panel-grid"><section class="panel"><div class="panel-title"><div><p class="eyebrow">CONTENIDO</p><h2>Artículos recientes</h2></div><a href="#editor">+ Crear artículo</a></div><div class="table"><div class="row head"><span>Título</span><span>Categoría</span><span>Estado</span><span>Acción</span></div><div id="articleRows"></div></div></section><section class="panel quick"><p class="eyebrow">ACCESOS RÁPIDOS</p><h2>¿Qué quieres hacer?</h2><a href="#editor">✦ Crear un artículo nuevo <small>Escribe y guarda contenido</small></a><a href="#sources">◎ Administrar fuentes <small>Prepara referencias verificables</small></a><a href="#categories">◇ Administrar categorías <small>Organiza el contenido</small></a></section></div></section>
-<section id="editor" class="view hidden"><div class="panel editor"><p class="eyebrow">EDITOR</p><h2>Nuevo artículo</h2><label>Título<input id="title" placeholder="Escribe el título del artículo"></label><label>Categoría<select id="category"><option>Actualidad</option><option>Análisis</option><option>Economía</option><option>Tecnología</option><option>Ciencia</option><option>Sociedad</option></select></label><label>Resumen<textarea id="summary" rows="4" placeholder="Resumen breve..."></textarea></label><label>Contenido<textarea rows="10" placeholder="Contenido del artículo..."></textarea></label><div class="actions"><button class="secondary" type="button">Guardar borrador</button><button class="primary" type="button" id="publish">Publicar</button></div></div></section>
-</main><script src="admin.js"></script></body></html>
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-mark">A</div><p class="eyebrow">ALBA NEWS</p><h1>Centro editorial</h1>
+    <p class="auth-copy">Accede para gestionar noticias, fuentes, verificación y publicación.</p>
+    <div class="auth-tabs"><button class="auth-tab active" data-auth="login">Iniciar sesión</button><button class="auth-tab" data-auth="signup">Crear cuenta</button></div>
+    <form id="authForm"><label>Correo electrónico<input id="authEmail" type="email" autocomplete="email" required placeholder="correo@ejemplo.com"></label><label>Contraseña<input id="authPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Mínimo 6 caracteres"></label><button class="primary full" id="authSubmit">Entrar al centro editorial</button></form>
+    <p id="authMessage" class="form-message"></p>
+  </div>
+</div>
+
+<div id="appShell" class="shell hidden">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">A</div><div><strong>ALBA</strong><small>NEWS · EDITORIAL</small></div></div>
+  <nav id="mainNav">
+    <button class="nav-item active" data-view="dashboard">▦ <span>Resumen</span></button>
+    <button class="nav-item" data-view="articles">▤ <span>Artículos</span></button>
+    <button class="nav-item" data-view="editor">＋ <span>Nuevo artículo</span></button>
+    <button class="nav-item" data-view="sources">◎ <span>Fuentes</span></button>
+    <button class="nav-item" data-view="categories">◇ <span>Categorías</span></button>
+  </nav>
+  <div class="sidebar-bottom"><a href="../">← Ver ALBA NEWS</a><button id="logout">Cerrar sesión</button></div>
+</aside>
+<main class="main">
+<header class="topbar"><div><p class="eyebrow">CENTRO DE CONTROL</p><h1 id="pageTitle">Resumen editorial</h1></div><div class="top-actions"><span id="syncStatus" class="sync">● Conectado</span><button id="profileButton" class="profile">Editor <b>AL</b></button></div></header>
+
+<section id="dashboard" class="view">
+  <div class="hero-line"><div><p class="eyebrow">ALBA NEWS 2.0</p><h2>Todo el control editorial, en un solo lugar.</h2><p>Revisa, prepara y publica información con contexto antes de que llegue al lector.</p></div><button class="primary" data-go="editor">＋ Crear noticia</button></div>
+  <div class="stats"><article><span>PUBLICADOS</span><strong id="statPublished">—</strong><small>Historias visibles</small></article><article><span>EN REVISIÓN</span><strong id="statReview">—</strong><small>Pendientes de edición</small></article><article><span>BORRADORES</span><strong id="statDraft">—</strong><small>Contenido en preparación</small></article><article><span>FUENTES</span><strong id="statSources">—</strong><small>Referencias activas</small></article></div>
+  <div class="dashboard-grid"><section class="panel"><div class="panel-head"><div><p class="eyebrow">ÚLTIMAS HISTORIAS</p><h2>Actividad editorial</h2></div><button class="ghost" data-go="articles">Ver todas →</button></div><div id="recentRows" class="article-list"></div></section><section class="panel checklist"><p class="eyebrow">FLUJO ALBA</p><h2>Antes de publicar</h2><div><b>01</b><span><strong>Fuente identificada</strong><small>Confirma de dónde procede la información.</small></span></div><div><b>02</b><span><strong>Contexto añadido</strong><small>Resume qué pasó, impacto y próximos pasos.</small></span></div><div><b>03</b><span><strong>Verificación</strong><small>Publica solo cuando el contenido esté listo.</small></span></div></section></div>
+</section>
+
+<section id="articles" class="view hidden"><div class="section-head"><div><p class="eyebrow">REDACCIÓN</p><h2>Artículos</h2></div><button class="primary" data-go="editor">＋ Nuevo artículo</button></div><div class="toolbar"><input id="articleSearch" placeholder="Buscar por título…"><select id="articleStatus"><option value="all">Todos los estados</option><option value="published">Publicados</option><option value="review">En revisión</option><option value="draft">Borradores</option><option value="archived">Archivados</option></select></div><div class="panel table-panel"><div class="table-head"><span>Título</span><span>Categoría</span><span>Estado</span><span>Fecha</span><span></span></div><div id="articleTable"></div></div></section>
+
+<section id="editor" class="view hidden"><div class="section-head"><div><p class="eyebrow">REDACCIÓN</p><h2>Nuevo artículo</h2><p class="section-copy">Crea una noticia completa con contexto y criterios editoriales.</p></div></div><form id="articleForm" class="editor-grid">
+  <div class="panel editor-main"><label>Título<input id="title" required maxlength="220" placeholder="Título claro, preciso y noticioso"></label><label>Subtítulo<input id="subtitle" maxlength="280" placeholder="Una segunda línea que aporte contexto"></label><div class="two"><label>Categoría<select id="category" required></select></label><label>Ubicación<input id="location" maxlength="120" placeholder="Honduras · Olancho"></label></div><label>Resumen<textarea id="summary" rows="4" maxlength="1200" required placeholder="Explica la noticia en pocas líneas."></textarea></label><label>Contenido<textarea id="content" rows="11" placeholder="Desarrolla los hechos, antecedentes y contexto."></textarea></label></div>
+  <div class="editor-side"><section class="panel"><p class="eyebrow">ANÁLISIS ALBA</p><label>¿Qué pasó?<textarea id="whatHappened" rows="4" placeholder="Hechos principales."></textarea></label><label>¿Por qué importa?<textarea id="whyMatters" rows="4" placeholder="Contexto y relevancia."></textarea></label><label>Impacto<textarea id="impact" rows="4" placeholder="¿A quién afecta o beneficia?"></textarea></label><label>¿Qué sigue?<textarea id="whatNext" rows="4" placeholder="Próximos pasos o escenarios."></textarea></label></section><section class="panel"><p class="eyebrow">PUBLICACIÓN</p><label>Imagen URL<input id="imageUrl" type="url" placeholder="https://…"></label><label>Fuente / URL original<input id="canonicalUrl" type="url" placeholder="https://…"></label><label class="check"><input id="featured" type="checkbox"> Destacar en portada</label><div class="actions"><button class="secondary" type="button" id="saveDraft">Guardar borrador</button><button class="primary" type="submit">Publicar</button></div><p id="editorMessage" class="form-message"></p></section></div>
+</form></section>
+
+<section id="sources" class="view hidden"><div class="section-head"><div><p class="eyebrow">REFERENCIAS</p><h2>Fuentes conectadas</h2><p class="section-copy">Control editorial de las fuentes que alimentan ALBA.</p></div></div><div id="sourceCards" class="source-grid"></div></section>
+<section id="categories" class="view hidden"><div class="section-head"><div><p class="eyebrow">ORGANIZACIÓN</p><h2>Categorías</h2></div></div><div id="categoryCards" class="category-grid"></div></section>
+</main></div>
+<script src="admin.js"></script>
+</body></html>
